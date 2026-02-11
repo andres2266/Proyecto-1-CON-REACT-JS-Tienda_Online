@@ -7,6 +7,8 @@ export const useMenuAuthHook = () => {
   const [dataUser, setDataUser] = useState([]);
   const [token, setToken] = useState(Cookies.get("token") || "");
 
+  const API = import.meta.env.VITE_API_URL;
+
   const handleClickRegister = () => {
     setIsOpenAccount(!isOpenAccount);
   };
@@ -16,11 +18,9 @@ export const useMenuAuthHook = () => {
   };
 
   const handleClickLogout = () => {
-    // Eliminar el token de las cookies al cerrar sesión y actualizar el estado del token en la cookie
     Cookies.remove("token");
     setToken("");
     setDataUser([]);
-
     console.log("Se ha cerrado sesión");
   };
 
@@ -31,7 +31,7 @@ export const useMenuAuthHook = () => {
     const userData = { email, password };
 
     try {
-      const response = await fetch("http://localhost:3000/api/v1/login", {
+      const response = await fetch(`${API}/api/v1/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -78,16 +78,14 @@ export const useMenuAuthHook = () => {
     const verifyToken = async () => {
       if (token) {
         try {
-          const response = await fetch(
-            "http://localhost:3000/api/v1/verify-token",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await fetch(`${API}/api/v1/verify-token`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
           const data = await response.json();
           if (data.user) {
             setDataUser([data.user]);
@@ -106,16 +104,14 @@ export const useMenuAuthHook = () => {
     const refreshToken = async () => {
       if (token) {
         try {
-          const response = await fetch(
-            "http://localhost:3000/api/v1/refresh-token",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await fetch(`${API}/api/v1/refresh-token`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
           const data = await response.json();
           if (data.user) {
             setDataUser([data.user]);
@@ -146,3 +142,4 @@ export const useMenuAuthHook = () => {
     handleClickRegister,
   };
 };
+
